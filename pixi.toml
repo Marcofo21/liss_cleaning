@@ -35,3 +35,4 @@ r-forcats = "*"
 [pypi-dependencies]
 pdbp = "*"
 kaleido = "*"
+liss_cleaning = { path = ".", editable = true }

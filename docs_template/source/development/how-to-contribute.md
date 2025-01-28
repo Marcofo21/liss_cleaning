@@ -51,7 +51,7 @@ $ browser docs_template/build/html/index.html
 1. Implement the fix or new feature.
 
 1. We validate contributions in three ways. First, we have a test suite to check the
-   implementation of liss_cleaning. Second, we correct for stylistic errors in code
+   implementation of  Second, we correct for stylistic errors in code
    and documentation using linters. Third, we test whether the documentation builds
    successfully.
 

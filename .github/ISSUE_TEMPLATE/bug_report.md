@@ -9,9 +9,9 @@ labels: "bug"
 
 - [ ] I have checked that this issue has not already been reported.
 
-- [ ] I have confirmed this bug exists on the latest version of liss_cleaning.
+- [ ] I have confirmed this bug exists on the latest version of 
 
-- [ ] (optional) I have confirmed this bug exists on the `main` branch of liss_cleaning.
+- [ ] (optional) I have confirmed this bug exists on the `main` branch of 
 
 ---
 
