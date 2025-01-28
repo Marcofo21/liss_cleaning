@@ -44,6 +44,17 @@ repos:
         types_or: [python, jupyter]
         args:
           - --fix
+          - --ignore=PLR2004
+          - --ignore=EM101
+          - --ignore=TRY003
+          - --ignore=PLR0911
+          - --ignore=D205
+          - --ignore=FBT001
+          - --ignore=FBT002
+          - --ignore=B008
+          - --ignore=B006
+          - --ignore=FBT003
+
       # Run the formatter.
       - id: ruff-format
         types_or: [python, jupyter]

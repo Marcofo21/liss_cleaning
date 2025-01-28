@@ -1,0 +1,5 @@
+---
+dataset_1: [variable_1, variable_2, variable_3]
+dataset_2: [variable_4, variable_5, variable_6]
+waves: [1, 2, 3]
+# This is a template for filtering variables from each individual dataset

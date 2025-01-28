@@ -17,6 +17,8 @@
 # bld
 bld/
 
+src/liss_cleaning/data/*
+
 # latex
 *.aux
 *.bbl
