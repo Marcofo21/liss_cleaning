@@ -5,8 +5,8 @@ others, and modifying the configuration settings.
 ### First step
 
 Before changing anything else, you should rename the project. In your preferred editor
-search for `"template_project"` and replace it with a concise version of your project's
-name. Importantly, you also need to rename the folder `src/template_project` to
+search for `"liss_cleaning"` and replace it with a concise version of your project's
+name. Importantly, you also need to rename the folder `src/liss_cleaning` to
 `src/<new_project_name>`!
 
 ```{warning}

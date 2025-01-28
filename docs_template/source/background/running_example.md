@@ -1,4 +1,4 @@
-template_project that will be installed with the templates is a simple empirical
+liss_cleaning that will be installed with the templates is a simple empirical
 project. Its abstract might read:
 
 > This paper estimates the probability of smoking given age, marital status, and level

@@ -1,5 +1,5 @@
 ---
-name: template_project
+name: liss_cleaning
 channels: [conda-forge, r, nodefaults]
 dependencies:
   - python ==3.12

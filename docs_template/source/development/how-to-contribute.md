@@ -23,7 +23,7 @@ for some immediate and clearly defined tasks.
 
    ```console
    $ mamba env create -f environment.yml
-   $ conda activate template_project
+   $ conda activate liss_cleaning
    ```
 
 1. In case you work on the documentation, you also have to install and activate the
@@ -51,11 +51,11 @@ $ browser docs_template/build/html/index.html
 1. Implement the fix or new feature.
 
 1. We validate contributions in three ways. First, we have a test suite to check the
-   implementation of template_project. Second, we correct for stylistic errors in code
+   implementation of liss_cleaning. Second, we correct for stylistic errors in code
    and documentation using linters. Third, we test whether the documentation builds
    successfully.
 
-   You can run the checks on template_project with `pytest` by running
+   You can run the checks on liss_cleaning with `pytest` by running
 
    ```console
    $ pytest
@@ -68,7 +68,7 @@ $ browser docs_template/build/html/index.html
    To correct stylistic errors, you can also install the linters as a pre-commit with
 
    ```console
-   $ conda activate template_project
+   $ conda activate liss_cleaning
    $ pre-commit install
    ```
 

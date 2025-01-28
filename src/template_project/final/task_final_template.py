@@ -4,8 +4,8 @@ import pandas as pd
 import pyreadr
 import pytask
 
-from template_project.config import BLD, SRC, TEMPLATE_GROUPS
-from template_project.final.plot_template import plot_regression_by_age
+from liss_cleaning.config import BLD, SRC, TEMPLATE_GROUPS
+from liss_cleaning.final.plot_template import plot_regression_by_age
 
 for language in ["python", "r"]:
     extension = "pickle" if language == "python" else "rds"

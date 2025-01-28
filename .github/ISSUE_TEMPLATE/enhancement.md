@@ -1,7 +1,7 @@
 ---
 
 name: Enhancement
-about: Suggest an idea for template_project
+about: Suggest an idea for liss_cleaning
 title: "ENH:"
 labels: "enhancement"
 
@@ -10,7 +10,7 @@ labels: "enhancement"
 #### Is your feature request related to a problem?
 
 Provide a description of what the problem is, e.g. "I wish I could use
-template_project to do [...]".
+liss_cleaning to do [...]".
 
 #### Describe the solution you'd like
 
