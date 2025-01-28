@@ -1,0 +1,37 @@
+[project]
+authors = ["Marcofo21 <marco.forti@uni-bonn.de>"]
+channels = ["conda-forge", "r", "nodefaults"]
+description = "Add a short description here"
+name = "liss_cleaning"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "==3.12"
+pip = ">=21.1"
+conda-lock = "*"
+ipykernel = "*"
+jupyterlab = "*"
+pre-commit = "*"
+pytask = ">=0.5.0"
+pytask-latex = ">=0.4.2"
+pytask-parallel = ">=0.5.0"
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+statsmodels = "*"
+numpy = "*"
+pandas = ">=2.2"
+plotly = ">=5.2.0,<6"
+pytask-r = ">=0.4.1"
+pyreadr = "*"
+r-plyr = "*"
+r-precommit = "*"
+r-yaml = "*"
+r-forcats = "*"
+
+[pypi-dependencies]
+pdbp = "*"
+kaleido = "*"
