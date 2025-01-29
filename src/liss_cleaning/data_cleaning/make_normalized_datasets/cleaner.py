@@ -1,10 +1,12 @@
+import importlib
 import warnings
 
 import pandas as pd
-from liss_data_cleaning.helper_modules.general_error_handlers import (
+
+from liss_cleaning.helper_modules.general_error_handlers import (
     _check_file_exists,
 )
-from liss_data_cleaning.helper_modules.load_save import load_data
+from liss_cleaning.helper_modules.load_save import load_data
 
 
 def clean_dataset(dataset_name, source_files_index_info) -> pd.DataFrame:
@@ -69,7 +71,7 @@ def _get_time_index_dictionary_from_dataset_module(dataset_name):
     """Get the time index dictionary from the module."""
     module = __import__(
         (
-            "liss_data_cleaning.data_cleaning.make_normalized_datasets"
+            "liss_cleaning.data_cleaning.make_normalized_datasets"
             ".specific_cleaners.{dataset_name}_cleaner"
         ),
         fromlist=[f"{dataset_name}"],
@@ -109,16 +111,41 @@ def _check_old_cols_present(merged_raws, cols_mapping) -> None:
 
 
 def _get_cleaning_function_from_dataset_module(dataset_name):
-    """Get the cleaning function from the module."""
-    module = __import__(
-        (
-            "liss_data_cleaning.data_cleaning.make_normalized_datasets."
-            "specific_cleaners.{dataset_name}_cleaner"
-        ),
-        fromlist=[dataset_name],
-    )
-    cleaning_function_name = f"clean_{dataset_name}"
-    return getattr(module, cleaning_function_name)
+    """Get the cleaning function from the module.
+
+    Args:
+        dataset_name (str): The name of the dataset for which to retrieve the cleaning
+            function.
+
+    Returns:
+        function: The cleaning function associated with the dataset.
+
+    Raises:
+        ImportError: If the module for the dataset cannot be imported.
+        AttributeError: If the cleaning function is not found in the module.
+    """
+    try:
+        # Dynamically import the module based on the dataset name
+        module_name = (
+            "liss_cleaning.data_cleaning.make_normalized_datasets"
+            f".specific_cleaners.{dataset_name}_cleaner"
+        )
+        dataset_module = importlib.import_module(module_name)
+
+        function_name = f"clean_{dataset_name}"
+        cleaning_function = getattr(dataset_module, function_name)
+
+    except ImportError as e:
+        error_msg = f"Module for dataset '{dataset_name}' could not be imported: {e}"
+        raise ImportError(error_msg) from e
+
+    except AttributeError as e:
+        error_msg = (
+            f"Cleaning function not found in module for dataset '{dataset_name}': {e}"
+        )
+        raise AttributeError(error_msg) from e
+
+    return cleaning_function
 
 
 def _check_all_raws_same_columns(cleaned_datasets):

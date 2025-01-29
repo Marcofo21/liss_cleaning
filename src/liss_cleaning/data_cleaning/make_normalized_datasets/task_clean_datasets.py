@@ -3,18 +3,19 @@
 from pathlib import Path
 from typing import Annotated
 
-from liss_data_cleaning.config import BLD, DATASETS_TO_PRODUCE, NORMALIZED_FORMAT, SRC
-from liss_data_cleaning.data_cleaning.make_normalized_datasets.cleaner import (
+from pytask import Product, task
+
+from liss_cleaning.config import BLD, DATASETS_TO_PRODUCE, NORMALIZED_FORMAT, SRC
+from liss_cleaning.data_cleaning.make_normalized_datasets.cleaner import (
     clean_dataset,
 )
-from liss_data_cleaning.helper_modules.load_save import save_data
-from pytask import Product, task
+from liss_cleaning.helper_modules.load_save import save_data
 
 
 def get_source_files_dict(new_dataset):
     """Get the source files paths from the dictionary in the cleaning module."""
     module = __import__(
-        f"liss_data_cleaning.data_cleaning.make_normalized_datasets.specific_cleaners.{new_dataset}_cleaner",
+        f"liss_cleaning.data_cleaning.make_normalized_datasets.specific_cleaners.{new_dataset}_cleaner",
         fromlist=[f"{new_dataset}"],
     )
     return module.survey_time_index

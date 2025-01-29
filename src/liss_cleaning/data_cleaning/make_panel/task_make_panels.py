@@ -4,19 +4,20 @@ from pathlib import Path
 from typing import Annotated
 
 import pandas as pd
-from liss_data_cleaning.config import (
+from pytask import Product, task
+
+from liss_cleaning.config import (
     BLD,
     NORMALIZED_FORMAT,
     PANEL_FORMAT,
     PANELS_TO_MAKE,
 )
-from liss_data_cleaning.data_cleaning.make_panel.produce_panel import merge_data
-from liss_data_cleaning.helper_modules.general_error_handlers import (
+from liss_cleaning.data_cleaning.make_panel.produce_panel import merge_data
+from liss_cleaning.helper_modules.general_error_handlers import (
     _check_file_exists,
     _check_variables_exist,
 )
-from liss_data_cleaning.helper_modules.load_save import load_data, save_data
-from pytask import Product, task
+from liss_cleaning.helper_modules.load_save import load_data, save_data
 
 for panel, datasets_variables in PANELS_TO_MAKE.items():
 

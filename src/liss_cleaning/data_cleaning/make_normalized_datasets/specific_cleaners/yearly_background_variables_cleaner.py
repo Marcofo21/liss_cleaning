@@ -1,6 +1,7 @@
 import pandas as pd
-from liss_data_cleaning.config import BLD_CLEANED_DATA, NORMALIZED_FORMAT
-from liss_data_cleaning.helper_modules.general_cleaners import (
+
+from liss_cleaning.config import BLD_CLEANED_DATA, NORMALIZED_FORMAT
+from liss_cleaning.helper_modules.general_cleaners import (
     _apply_lowest_float_dtype,
     _apply_lowest_int_dtype,
 )
@@ -130,7 +131,7 @@ def clean_yearly_background_variables(
     )
 
     for col in [
-        "net_income_incl__cat",
+        "net_income_incl_cat",
         "net_income_personal",
         "occupation",
         "origin",

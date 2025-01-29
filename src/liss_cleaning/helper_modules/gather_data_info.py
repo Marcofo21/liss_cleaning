@@ -1,5 +1,6 @@
 import pandas as pd
-from liss_data_cleaning.helper_modules.general_error_handlers import _check_object_type
+
+from liss_cleaning.helper_modules.general_error_handlers import _check_object_type
 
 
 def extract_info_each_column(data):

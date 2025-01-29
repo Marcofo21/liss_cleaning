@@ -54,7 +54,6 @@ repos:
           - --ignore=B008
           - --ignore=B006
           - --ignore=FBT003
-
       # Run the formatter.
       - id: ruff-format
         types_or: [python, jupyter]
@@ -83,6 +82,7 @@ repos:
     rev: v2.3.0
     hooks:
       - id: codespell
+        args: [--exclude=./pixi.lock]
   - repo: local
     hooks:
       - id: forbid-to-commit

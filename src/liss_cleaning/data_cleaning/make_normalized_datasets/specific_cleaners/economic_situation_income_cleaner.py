@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-from liss_data_cleaning.config import SRC_DATA
-from liss_data_cleaning.helper_modules.general_cleaners import (
+
+from liss_cleaning.config import SRC_DATA
+from liss_cleaning.helper_modules.general_cleaners import (
     _apply_lowest_float_dtype,
     _apply_lowest_int_dtype,
     _handle_inconsistent_column_code_in_raw,

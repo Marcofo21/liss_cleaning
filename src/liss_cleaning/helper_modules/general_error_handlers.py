@@ -1,5 +1,6 @@
+from pathlib import Path
+
 import pandas as pd
-from liss_data_cleaning.config import BLD_CLEANED_DATA
 
 
 def _check_variables_exist(data: pd.DataFrame, variables: list):
@@ -29,6 +30,9 @@ def _check_object_type(obj, obj_type):
 
 def _check_file_exists(file_path):
     """Check if file exists, if it does not, give error message."""
+    if isinstance(file_path, str):
+        file_path = Path(file_path)
+
     if not file_path.exists():
         msg = f"File {file_path} does not exist."
         # if the file_path points to
@@ -50,19 +54,6 @@ def _check_object_type(obj, obj_type):
     if not isinstance(obj, obj_type):
         msg = f"Expected {obj} to be of type {obj_type}, got {type(obj)}"
         raise TypeError(msg)
-
-
-def _check_file_exists(file_path):
-    """Check if file exists, if it does not, give error message."""
-    if not file_path.exists():
-        msg = f"File {file_path} does not exist."
-        # if BLD_CLEANED_DATA is in the str of the file_path, add to the error
-        if str(BLD_CLEANED_DATA) in str(file_path):
-            msg += """ The file missing has not been created during the cleaning
-            procedure, check that it is correctly specified
-            in the config.py file both in the DATASETS_TO_PRODUCE and the PANELS_TO_MAKE
-            variables."""
-        raise FileNotFoundError(msg)
 
 
 def _check_series_dtype(series, dtype):
