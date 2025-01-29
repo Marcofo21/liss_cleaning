@@ -58,6 +58,8 @@ def _squash_datasets(cleaned_datasets):
     nas are replaced by the first non-na value in the group.
     """
     # ignore warning in this function
+    if len(cleaned_datasets) == 1:
+        return cleaned_datasets[0]
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         return (

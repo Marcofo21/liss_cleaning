@@ -12,6 +12,8 @@ def save_data(df, path):
         df.to_stata(path, write_index=False)
     elif str(path).endswith(".parquet"):
         df.to_parquet(path)
+    elif str(path).endswith(".arrow"):
+        df.to_feather(path)
     else:
         msg = f"Format {path.suffix} not supported."
         raise ValueError(msg)
@@ -28,6 +30,8 @@ def load_data(path):
         return pd.read_stata(path)
     if extension == "parquet":
         return pd.read_parquet(path)
+    if extension == "arrow":
+        return pd.read_feather(path)
     msg = f"Format {extension} not supported."
     raise ValueError(msg)
 

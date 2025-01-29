@@ -8,7 +8,7 @@ from liss_cleaning.helper_modules.general_cleaners import (
 
 pd.set_option("future.no_silent_downcasting", True)
 
-survey_time_index = {
+dependencies_time_index = {
     f"{SRC_DATA}/xxx-ambiguous-beliefs/wave-3/L_gaudecker2019_3_6p.dta": 3,
     f"{SRC_DATA}/xxx-ambiguous-beliefs/wave-4/L_gaudecker2019_4_6p.dta": 4,
     f"{SRC_DATA}/xxx-ambiguous-beliefs/wave-5/L_gaudecker2020_5_6p.dta": 5,
@@ -24,7 +24,7 @@ def clean_ambiguous_beliefs(
 ) -> pd.DataFrame:
     """Clean the ambiguous beliefs dataset."""
     cleaned_data = pd.DataFrame(index=raw.index)
-    wave_identifier = survey_time_index[source_file_name]
+    wave_identifier = dependencies_time_index[source_file_name]
     cleaned_data["wave"] = wave_identifier
     wave_to_year = {
         3: 2019,
@@ -100,4 +100,13 @@ def clean_ambiguous_beliefs(
                 )
             )
 
+    cleaned_data["end_time"] = raw["TijdE"].apply(_clean_time_str)
+    cleaned_data["start_time"] = raw["TijdB"].apply(_clean_time_str)
     return cleaned_data
+
+
+def _clean_time_str(time_str):
+    """Adjust time string to have only hours, minutes and seconds."""
+    if time_str in (" ", ""):
+        return pd.NA
+    return pd.to_datetime(time_str, format="%H:%M:%S")

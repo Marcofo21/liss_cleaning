@@ -1,47 +1,57 @@
 """Task to make individual cleaned datasets."""
 
+import importlib
 from pathlib import Path
-from typing import Annotated
 
-from pytask import Product, task
+import pandas as pd
+from pytask import task
 
-from liss_cleaning.config import BLD, DATASETS_TO_PRODUCE, NORMALIZED_FORMAT, SRC
-from liss_cleaning.data_cleaning.make_normalized_datasets.cleaner import (
-    clean_dataset,
-)
-from liss_cleaning.helper_modules.load_save import save_data
+from liss_cleaning.config import BLD, NORMALIZED_FORMAT, SRC
+from liss_cleaning.data_dictionary import data_dictionary
+from liss_cleaning.helper_modules.load_save import load_data, save_data
 
 
-def get_source_files_dict(new_dataset):
-    """Get the source files paths from the dictionary in the cleaning module."""
-    module = __import__(
-        f"liss_cleaning.data_cleaning.make_normalized_datasets.specific_cleaners.{new_dataset}_cleaner",
-        fromlist=[f"{new_dataset}"],
+def _get_cleaning_function_from_dataset_module(dataset_name):
+    """Get the cleaning function from the specific cleaner module."""
+    module = importlib.import_module(
+        f"liss_cleaning.data_cleaning.make_normalized_datasets.specific_cleaners.{dataset_name}_cleaner"
     )
-    return module.survey_time_index
+    return module.clean_dataset
 
 
-for new_dataset in DATASETS_TO_PRODUCE:
+to_produce = data_dictionary.keys()
 
-    @task
-    def task_clean_dataset(
-        dataset_name=new_dataset,
-        source_files_index_info=get_source_files_dict(new_dataset),
-        source_files=list(get_source_files_dict(new_dataset).keys()),
-        general_cleaner_script=SRC
-        / "data_cleaning"
-        / "make_normalized_datasets"
-        / "cleaner.py",
-        specific_cleaner_script=SRC
-        / "data_cleaning"
-        / "make_normalized_datasets"
-        / "specific_cleaners"
-        / f"{new_dataset}_cleaner.py",
-        cleaner_helpers_script=SRC / "helper_modules" / "general_cleaners.py",
-        cleaned_dataset: Annotated[Path, Product] = BLD
-        / "cleaned_data"
-        / f"{new_dataset}.{NORMALIZED_FORMAT}",
+for new_dataset in to_produce:
+    for source_file in data_dictionary[new_dataset]:
+        path_to_produce = data_dictionary[new_dataset][source_file]
+        cleaning_func = _get_cleaning_function_from_dataset_module(new_dataset)
+
+        @task(id=f"clean_{new_dataset}_{source_file.stem}")
+        def task_clean_dataset(
+            source_path: Path = source_file,
+            produces=path_to_produce,
+            cleaning_func=cleaning_func,
+            cleaning_script=SRC
+            / "data_cleaning"
+            / "make_normalized_datasets"
+            / "specific_cleaners"
+            / f"{new_dataset}_cleaner.py",
+        ):
+            """Clean the dataset."""
+            raw = load_data(source_path)
+            cleaned = cleaning_func(raw, source_path)
+            save_data(cleaned, produces)
+
+
+for new_dataset in to_produce:
+    dep_dictionary = data_dictionary[new_dataset]
+
+    def task_merge_survey(
+        data_paths=dep_dictionary,
+        produces=BLD / "merged_waves" / f"{new_dataset}.{NORMALIZED_FORMAT}",
     ):
-        """Clean the dataset."""
-        cleaned = clean_dataset(dataset_name, source_files_index_info)
-        save_data(cleaned, cleaned_dataset)
+        """Merge the cleaned datasets."""
+        df = pd.DataFrame()
+        for dataset in data_paths.values():
+            df = pd.concat([df, load_data(dataset)], axis=0)
+        save_data(df, produces)
