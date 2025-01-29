@@ -46,6 +46,7 @@ for new_dataset in to_produce:
 for new_dataset in to_produce:
     dep_dictionary = data_dictionary[new_dataset]
 
+    @task(id=f"merge_waves_{new_dataset}")
     def task_merge_survey(
         data_paths=dep_dictionary,
         produces=BLD / "merged_waves" / f"{new_dataset}.{NORMALIZED_FORMAT}",

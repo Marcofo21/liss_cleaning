@@ -2,9 +2,9 @@ import pandas as pd
 
 pd.set_option("future.no_silent_downcasting", True)
 
-survey_time_index = {}
+dependencies_time_index = {}
 
 
-def clean_long_ambiguous_beliefs(raw, source_file_name):
+def clean_dataset(raw, source_file_name):
     source_file_name = source_file_name.split("/")[-1]
     return raw

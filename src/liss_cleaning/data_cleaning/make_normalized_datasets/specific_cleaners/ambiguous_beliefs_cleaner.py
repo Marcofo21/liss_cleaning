@@ -9,16 +9,16 @@ from liss_cleaning.helper_modules.general_cleaners import (
 pd.set_option("future.no_silent_downcasting", True)
 
 dependencies_time_index = {
-    f"{SRC_DATA}/xxx-ambiguous-beliefs/wave-3/L_gaudecker2019_3_6p.dta": 3,
-    f"{SRC_DATA}/xxx-ambiguous-beliefs/wave-4/L_gaudecker2019_4_6p.dta": 4,
-    f"{SRC_DATA}/xxx-ambiguous-beliefs/wave-5/L_gaudecker2020_5_6p.dta": 5,
-    f"{SRC_DATA}/xxx-ambiguous-beliefs/wave-6/L_gaudecker2020_6_6p.dta": 6,
-    f"{SRC_DATA}/xxx-ambiguous-beliefs/wave-7/L_gaudecker2021_7_6p.dta": 7,
+    SRC_DATA / "xxx-ambiguous-beliefs" / "wave-3" / "L_gaudecker2019_3_6p.dta": 3,
+    SRC_DATA / "xxx-ambiguous-beliefs" / "wave-4" / "L_gaudecker2019_4_6p.dta": 4,
+    SRC_DATA / "xxx-ambiguous-beliefs" / "wave-5" / "L_gaudecker2020_5_6p.dta": 5,
+    SRC_DATA / "xxx-ambiguous-beliefs" / "wave-6" / "L_gaudecker2020_6_6p.dta": 6,
+    SRC_DATA / "xxx-ambiguous-beliefs" / "wave-7" / "L_gaudecker2021_7_6p.dta": 7,
     "index_name": "wave",
 }
 
 
-def clean_ambiguous_beliefs(
+def clean_dataset(
     raw,
     source_file_name,
 ) -> pd.DataFrame:

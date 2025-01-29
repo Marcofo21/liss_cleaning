@@ -12,26 +12,26 @@ from liss_cleaning.helper_modules.general_cleaners import (
 )
 
 
-def _get_datetime_object(source_file_name):
-    time_identifier = source_file_name.split("_")[1]
-    return pd.to_datetime(time_identifier, format="%Y%m")
+def _get_date_month(source_file_name):
+    time_identifier = source_file_name.split("/")[-1].split("_")[1]
+    return time_identifier[:4] + "-" + time_identifier[4:]
 
 
-survey_time_index = {}
+dependencies_time_index = {}
 for x in os.listdir(f"{SRC_DATA}/001-background-variables"):
     if x.endswith(".dta"):
-        survey_time_index[f"{SRC_DATA}/001-background-variables/{x}"] = (
-            _get_datetime_object(x)
+        dependencies_time_index[SRC_DATA / "001-background-variables" / x] = (
+            _get_date_month(x)
         )
-survey_time_index["index_name"] = "month"
+dependencies_time_index["index_name"] = "month"
 
 
-def clean_monthly_background_variables(
+def clean_dataset(
     raw,
     source_file_name,
 ) -> pd.DataFrame:
     df = pd.DataFrame(index=raw.index)
-    time_identifier = _get_datetime_object(source_file_name.split("/")[-1])
+    time_identifier = _get_date_month(str(source_file_name))
 
     income_categories = {
         "no income": "No income",
@@ -63,7 +63,7 @@ def clean_monthly_background_variables(
             "45 - 54 years": "45-54",
         },
     )
-    df["month"] = time_identifier
+    df["year_month"] = time_identifier
     df["birth_year"] = _apply_lowest_int_dtype(raw["gebjaar"])
     df["civil_status"] = _replace_rename_categorical_column(
         raw["burgstat"],

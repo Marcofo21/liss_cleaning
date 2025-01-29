@@ -14,26 +14,26 @@ from liss_cleaning.helper_modules.general_cleaners import (
 
 pd.set_option("future.no_silent_downcasting", True)
 
-survey_time_index = {
-    f"{SRC_DATA}/010-economic-situation-income/wave-1/ci08a_1.0p_EN.dta": 2008,
-    f"{SRC_DATA}/010-economic-situation-income/wave-2/ci09b_EN_1.1p.dta": 2009,
-    f"{SRC_DATA}/010-economic-situation-income/wave-3/ci10c_EN_1.0p.dta": 2010,
-    f"{SRC_DATA}/010-economic-situation-income/wave-4/ci11d_EN_1.0p.dta": 2011,
-    f"{SRC_DATA}/010-economic-situation-income/wave-5/ci12e_1.0p_EN.dta": 2012,
-    f"{SRC_DATA}/010-economic-situation-income/wave-6/ci13f_1.1p_EN.dta": 2013,
-    f"{SRC_DATA}/010-economic-situation-income/wave-7/ci14g_1.0p_EN.dta": 2014,
-    f"{SRC_DATA}/010-economic-situation-income/wave-8/ci15h_EN_1.0p.dta": 2015,
-    f"{SRC_DATA}/010-economic-situation-income/wave-9/ci16i_EN_1.0p.dta": 2016,
-    f"{SRC_DATA}/010-economic-situation-income/wave-10/ci17j_EN_1.0p.dta": 2017,
-    f"{SRC_DATA}/010-economic-situation-income/wave-11/ci18k_EN_1.0p.dta": 2018,
-    f"{SRC_DATA}/010-economic-situation-income/wave-12/ci19l_EN_1.0p.dta": 2019,
-    f"{SRC_DATA}/010-economic-situation-income/wave-13/ci20m_EN_1.0p.dta": 2020,
-    f"{SRC_DATA}/010-economic-situation-income/wave-14/ci21n_EN_1.0p.dta": 2021,
+dependencies_time_index = {
+    SRC_DATA / "010-economic-situation-income" / "wave-1" / "ci08a_1.0p_EN.dta": 2008,
+    SRC_DATA / "010-economic-situation-income" / "wave-2" / "ci09b_EN_1.1p.dta": 2009,
+    SRC_DATA / "010-economic-situation-income" / "wave-3" / "ci10c_EN_1.0p.dta": 2010,
+    SRC_DATA / "010-economic-situation-income" / "wave-4" / "ci11d_EN_1.0p.dta": 2011,
+    SRC_DATA / "010-economic-situation-income" / "wave-5" / "ci12e_1.0p_EN.dta": 2012,
+    SRC_DATA / "010-economic-situation-income" / "wave-6" / "ci13f_1.1p_EN.dta": 2013,
+    SRC_DATA / "010-economic-situation-income" / "wave-7" / "ci14g_1.0p_EN.dta": 2014,
+    SRC_DATA / "010-economic-situation-income" / "wave-8" / "ci15h_EN_1.0p.dta": 2015,
+    SRC_DATA / "010-economic-situation-income" / "wave-9" / "ci16i_EN_1.0p.dta": 2016,
+    SRC_DATA / "010-economic-situation-income" / "wave-10" / "ci17j_EN_1.0p.dta": 2017,
+    SRC_DATA / "010-economic-situation-income" / "wave-11" / "ci18k_EN_1.0p.dta": 2018,
+    SRC_DATA / "010-economic-situation-income" / "wave-12" / "ci19l_EN_1.0p.dta": 2019,
+    SRC_DATA / "010-economic-situation-income" / "wave-13" / "ci20m_EN_1.0p.dta": 2020,
+    SRC_DATA / "010-economic-situation-income" / "wave-14" / "ci21n_EN_1.0p.dta": 2021,
     "index_name": "year",
 }
 
 
-def clean_economic_situation_income(raw, source_file_name) -> pd.DataFrame:
+def clean_dataset(raw, source_file_name) -> pd.DataFrame:
     """Clean the economic situation income data from the LISS panel.
 
     Args:
@@ -44,9 +44,11 @@ def clean_economic_situation_income(raw, source_file_name) -> pd.DataFrame:
         pd.DataFrame: The cleaned data.
     """
     cleaned = pd.DataFrame(index=raw.index)
-    column_time_identifier = source_file_name.split("/")[-1].split("_")[0][2:5]
+    column_time_identifier = str(source_file_name).split("/")[-1].split("_")[0][2:5]
 
-    cleaned[survey_time_index["index_name"]] = survey_time_index[source_file_name]
+    cleaned[dependencies_time_index["index_name"]] = dependencies_time_index[
+        source_file_name
+    ]
     cleaned["personal_id"] = _apply_lowest_int_dtype(raw["nomem_encr"])
     cleaned["age"] = _apply_lowest_int_dtype(raw[f"ci{column_time_identifier}002"])
     cleaned["alimony_children_amt"] = _replace_mixed_categoricals_floats(
@@ -132,7 +134,7 @@ def clean_economic_situation_income(raw, source_file_name) -> pd.DataFrame:
             298,
             381,
             2019,
-            survey_time_index[source_file_name],
+            dependencies_time_index[source_file_name],
         ),
         "utilities": 299,
     }
@@ -168,7 +170,7 @@ def clean_economic_situation_income(raw, source_file_name) -> pd.DataFrame:
             112,
             368,
             2014,
-            survey_time_index[source_file_name],
+            dependencies_time_index[source_file_name],
         )
     )
     cleaned["benefit_anw_gross_amt_categ"] = _replace_rename_categorical_column(
@@ -265,7 +267,7 @@ def clean_economic_situation_income(raw, source_file_name) -> pd.DataFrame:
         335,
         371,
         2014,
-        survey_time_index[source_file_name],
+        dependencies_time_index[source_file_name],
     )
     cleaned["benefit_iow_gross_amt_categ"] = _replace_rename_categorical_column(
         **_handle_missing_column(
@@ -307,7 +309,7 @@ def clean_economic_situation_income(raw, source_file_name) -> pd.DataFrame:
         256,
         379,
         2019,
-        survey_time_index[source_file_name],
+        dependencies_time_index[source_file_name],
     )
     cleaned["chance_to_lose_job"] = _replace_mixed_categoricals_floats(
         float_nan_values=[9999999999, 9999999998],

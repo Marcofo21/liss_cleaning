@@ -1,18 +1,20 @@
 import pandas as pd
 
-from liss_cleaning.config import BLD_CLEANED_DATA, NORMALIZED_FORMAT
+from liss_cleaning.config import BLD, NORMALIZED_FORMAT
 from liss_cleaning.helper_modules.general_cleaners import (
     _apply_lowest_float_dtype,
     _apply_lowest_int_dtype,
 )
 
-survey_time_index = {
-    f"{BLD_CLEANED_DATA}/monthly_background_variables.{NORMALIZED_FORMAT}": "all_years",
+dependencies_time_index = {
+    BLD
+    / "merged_waves"
+    / f"monthly_background_variables.{NORMALIZED_FORMAT}": "all_years",
     "index_name": "year",
 }
 
 
-def clean_yearly_background_variables(
+def clean_dataset(
     raw,
     source_file_name,  # noqa: ARG001
 ) -> pd.DataFrame:
@@ -20,9 +22,9 @@ def clean_yearly_background_variables(
     df = pd.DataFrame()
 
     df["personal_id"] = _apply_lowest_int_dtype(raw["personal_id"])
-    df["year"] = pd.to_numeric(raw["month"].dt.year)
+    df["year"] = pd.to_numeric(raw["year_month"].apply(lambda x: x.split("-")[0]))
     df = df.drop_duplicates(subset=["personal_id", "year"], keep="first")
-    raw["year"] = pd.to_numeric(raw["month"].dt.year)
+    raw["year"] = pd.to_numeric(raw["year_month"].apply(lambda x: x.split("-")[0]))
 
     df["age"] = _apply_lowest_int_dtype(
         _get_median_for_index(raw, ["personal_id", "year"], "age").round()
@@ -138,6 +140,7 @@ def clean_yearly_background_variables(
     ]:
         df[col] = _get_first_for_index(raw, ["personal_id", "year"], col)
         df[col] = df[col].astype("category")
+
     return df
 
 

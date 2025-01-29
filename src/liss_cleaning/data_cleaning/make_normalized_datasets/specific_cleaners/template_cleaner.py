@@ -6,12 +6,12 @@ import pandas as pd
 # module (just ignore the arguments
 # for the metadata)
 
-survey_time_index = {
+dependencies_time_index = {
     "name_dataset.dta": 2016,
     "name_dataset_2.dta": 2017,
     "index_name": "year",
 }
 
 
-def clean_dataset_1(raw, dta_file) -> pd.DataFrame:
+def clean_dataset(raw, dta_file) -> pd.DataFrame:
     pass

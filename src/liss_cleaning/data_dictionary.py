@@ -33,6 +33,7 @@ def _get_dataset_names():
     file_names = [name for name in file_names if name != "__init__.py"]
     file_names = [name.replace(".py", "") for name in file_names]
     file_names = [name.replace("_cleaner", "") for name in file_names]
+    file_names = [name for name in file_names if name != "template"]
     return file_names
 
 
