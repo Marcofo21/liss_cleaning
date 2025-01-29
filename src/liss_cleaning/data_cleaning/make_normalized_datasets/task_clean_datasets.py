@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 from pytask import task
 
-from liss_cleaning.config import BLD, NORMALIZED_FORMAT, SRC
+from liss_cleaning.config import BLD, SRC
 from liss_cleaning.data_dictionary import data_dictionary
 from liss_cleaning.helper_modules.load_save import load_data, save_data
 
@@ -49,7 +49,7 @@ for new_dataset in to_produce:
     @task(id=f"merge_waves_{new_dataset}")
     def task_merge_survey(
         data_paths=dep_dictionary,
-        produces=BLD / "merged_waves" / f"{new_dataset}.{NORMALIZED_FORMAT}",
+        produces=BLD / "merged_waves" / f"{new_dataset}.arrow",
     ):
         """Merge the cleaned datasets."""
         df = pd.DataFrame()

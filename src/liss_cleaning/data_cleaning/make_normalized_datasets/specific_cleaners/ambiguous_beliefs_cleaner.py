@@ -73,16 +73,16 @@ def clean_dataset(
     options_2 = {
         1: "50",
         2: "90",
-        3: "95",
-        4: "99",
+        3: "10",
+        4: "95",
         5: "70",
-        6: "80",
-        7: "60",
-        8: "10",
-        9: "30",
-        10: "40",
-        11: "20",
-        12: "5",
+        6: "30",
+        7: "5",
+        8: "99",
+        9: "80",
+        10: "60",
+        11: "40",
+        12: "20",
         13: "1",
     }
 
@@ -93,10 +93,10 @@ def clean_dataset(
                     raw[f"keuze_{option_1_key}_{option_2_key}"].apply(
                         lambda x: _replace_values(
                             x,
-                            {"optie 1": "Ambiguous bet", "optie 2": "Unambiguous bet"},
+                            {"optie 1": "AEX", "optie 2": "Lottery"},
                         ),
                     ),
-                    categories=["Ambiguous bet", "Unambiguous bet"],
+                    categories=["AEX", "Lottery"],
                 )
             )
 

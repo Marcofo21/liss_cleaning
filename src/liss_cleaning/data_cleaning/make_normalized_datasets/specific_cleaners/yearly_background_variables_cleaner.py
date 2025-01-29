@@ -1,15 +1,13 @@
 import pandas as pd
 
-from liss_cleaning.config import BLD, NORMALIZED_FORMAT
+from liss_cleaning.config import BLD
 from liss_cleaning.helper_modules.general_cleaners import (
     _apply_lowest_float_dtype,
     _apply_lowest_int_dtype,
 )
 
 dependencies_time_index = {
-    BLD
-    / "merged_waves"
-    / f"monthly_background_variables.{NORMALIZED_FORMAT}": "all_years",
+    BLD / "merged_waves" / "monthly_background_variables.arrow": "all_years",
     "index_name": "year",
 }
 
