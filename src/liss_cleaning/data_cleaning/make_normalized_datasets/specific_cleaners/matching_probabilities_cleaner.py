@@ -28,6 +28,7 @@ def clean_dataset(raw, source_file_name):
         df[f"mp_{option}"] = raw[matching_columns].apply(
             lambda x, opt=option: _get_interval(x, opt), axis=1
         )
+    df["wave"] = raw["wave"]
     return df
 
 
