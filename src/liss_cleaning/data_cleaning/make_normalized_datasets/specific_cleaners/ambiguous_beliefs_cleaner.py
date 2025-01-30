@@ -9,6 +9,8 @@ from liss_cleaning.helper_modules.general_cleaners import (
 pd.set_option("future.no_silent_downcasting", True)
 
 dependencies_time_index = {
+    SRC_DATA / "xxx-ambiguous-beliefs" / "wave-1" / "L_gaudecker2018_1_6p.dta": 1,
+    SRC_DATA / "xxx-ambiguous-beliefs" / "wave-2" / "L_gaudecker2018_2_6p.dta": 2,
     SRC_DATA / "xxx-ambiguous-beliefs" / "wave-3" / "L_gaudecker2019_3_6p.dta": 3,
     SRC_DATA / "xxx-ambiguous-beliefs" / "wave-4" / "L_gaudecker2019_4_6p.dta": 4,
     SRC_DATA / "xxx-ambiguous-beliefs" / "wave-5" / "L_gaudecker2020_5_6p.dta": 5,
@@ -27,6 +29,8 @@ def clean_dataset(
     wave_identifier = dependencies_time_index[source_file_name]
     cleaned_data["wave"] = wave_identifier
     wave_to_year = {
+        1: 2018,
+        2: 2018,
         3: 2019,
         4: 2019,
         5: 2020,
