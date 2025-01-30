@@ -13,13 +13,13 @@ def clean_dataset(raw, source_file_name):
     df = pd.DataFrame()
     source_file_name = source_file_name.stem
     options_ambiguous = {
-        1: ">1000",
-        2: ">1100",
-        3: "<950",
-        4: ">950_<1100",
-        5: "<=1100",
-        6: ">=950",
-        7: "<950_>1100",
+        1: "e0",
+        2: "e1",
+        3: "e2",
+        4: "e3",
+        5: "e1c",
+        6: "e2c",
+        7: "e3c",
     }
 
     df["personal_id"] = raw["personal_id"]
