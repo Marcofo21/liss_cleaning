@@ -29,7 +29,16 @@ def clean_dataset(raw, source_file_name):
             lambda x, opt=option: _get_interval(x, opt), axis=1
         )
     df["wave"] = raw["wave"]
-    return df
+
+    filtered_df = df.groupby("personal_id").filter(_check_eligible)
+    return filtered_df
+
+
+def _check_eligible(individual_data):
+    """Return False if there is less than 2 waves of data, True otherwise."""
+    individual_data = individual_data.drop(["personal_id", "wave"], axis=1)
+
+    return not individual_data.dropna().shape[0] < 2
 
 
 def _get_interval(rows, option):  # noqa: C901, PLR0912
