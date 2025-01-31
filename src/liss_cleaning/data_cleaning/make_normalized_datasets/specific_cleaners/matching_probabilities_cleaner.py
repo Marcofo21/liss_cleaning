@@ -31,6 +31,7 @@ def clean_dataset(raw, source_file_name):
     df["wave"] = raw["wave"]
 
     filtered_df = df.groupby("personal_id").filter(_check_eligible)
+
     return filtered_df
 
 
