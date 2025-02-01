@@ -106,6 +106,7 @@ def clean_dataset(
 
     cleaned_data["end_time"] = raw["TijdE"].apply(_clean_time_str)
     cleaned_data["start_time"] = raw["TijdB"].apply(_clean_time_str)
+    cleaned_data["data_completion"] = raw["DatumE"].apply(_clean_date_str)
     return cleaned_data
 
 
@@ -114,3 +115,10 @@ def _clean_time_str(time_str):
     if time_str in (" ", ""):
         return pd.NA
     return pd.to_datetime(time_str, format="%H:%M:%S")
+
+
+def _clean_date_str(date_str):
+    """Adjust date string to have only year, month and day."""
+    if date_str in (" ", ""):
+        return pd.NA
+    return pd.to_datetime(date_str, format="%d-%m-%Y")
