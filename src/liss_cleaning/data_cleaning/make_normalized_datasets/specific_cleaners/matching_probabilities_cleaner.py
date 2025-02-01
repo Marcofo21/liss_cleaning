@@ -29,10 +29,15 @@ def clean_dataset(raw, source_file_name):
             lambda x, opt=option: _get_interval(x, opt), axis=1
         )
     df["wave"] = raw["wave"]
-
+    df = df.groupby(["personal_id", "wave"]).filter(_check_answered_all_questions)
     filtered_df = df.groupby("personal_id").filter(_check_eligible)
-
     return filtered_df
+
+
+def _check_answered_all_questions(row):
+    """Return True if all questions in a row are answered, False otherwise."""
+    question_cols = ["mp_e0", "mp_e1", "mp_e2", "mp_e3", "mp_e1c", "mp_e2c", "mp_e3c"]
+    return row[question_cols].notna().all(axis=1).all()
 
 
 def _check_eligible(individual_data):
