@@ -24,6 +24,11 @@ for x in os.listdir(f"{SRC_DATA}/001-background-variables"):
             _get_date_month(x)
         )
 dependencies_time_index["index_name"] = "month"
+dependencies_time_index = {
+    k: v
+    for k, v in dependencies_time_index.items()
+    if not str(k).endswith("_do_not_use.dta")
+}
 
 
 def clean_dataset(
@@ -251,8 +256,6 @@ def clean_dataset(
             "No": "No",
         },
     )
-    df["urban_level_location"] = _handle_missing_column(raw, "sted")["series"]
-    df["location_urban"] = _handle_missing_column(raw, "sted")["series"]
     df["net_income_cat"] = _replace_rename_categorical_column(
         raw["nettocat"],
         renaming_dict=income_categories,
