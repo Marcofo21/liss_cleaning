@@ -112,11 +112,6 @@ def clean_dataset(
     )
     df["hh_head_lives_partner"] = df["hh_head_lives_partner"].astype("category")
 
-    df["urban_level_location"] = _get_first_for_index(
-        raw, ["personal_id", "year"], "urban_level_location"
-    )
-    df["urban_level_location"] = df["urban_level_location"].astype("category")
-
     df["net_income_cat"] = _get_first_for_index(
         raw, ["personal_id", "year"], "net_income_cat"
     )

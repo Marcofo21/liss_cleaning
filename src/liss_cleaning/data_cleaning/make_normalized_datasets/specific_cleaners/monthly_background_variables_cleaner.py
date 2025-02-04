@@ -251,8 +251,6 @@ def clean_dataset(
             "No": "No",
         },
     )
-    df["urban_level_location"] = _handle_missing_column(raw, "sted")["series"]
-    df["location_urban"] = _handle_missing_column(raw, "sted")["series"]
     df["net_income_cat"] = _replace_rename_categorical_column(
         raw["nettocat"],
         renaming_dict=income_categories,
