@@ -24,6 +24,11 @@ for x in os.listdir(f"{SRC_DATA}/001-background-variables"):
             _get_date_month(x)
         )
 dependencies_time_index["index_name"] = "month"
+dependencies_time_index = {
+    k: v
+    for k, v in dependencies_time_index.items()
+    if not str(k).endswith("_do_not_use.dta")
+}
 
 
 def clean_dataset(
