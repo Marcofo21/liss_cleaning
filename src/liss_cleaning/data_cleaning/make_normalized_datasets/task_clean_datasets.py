@@ -18,10 +18,6 @@ def _get_cleaning_function_from_dataset_module(dataset_name):
     return module.clean_dataset
 
 
-## No advantage to using catalogs here tbh; only difference between this and the
-# previous
-## is that intermediate gets stored in pickle; which was achievable anyways.
-## I understand the point in ML projects with insanely large dataframes, but this...
 data_catalogs_individual_datasets = {
     "ambiguous_beliefs": {
         "xxx-ambiguous-beliefs/wave-1/L_gaudecker2018_1_6p.dta": DataCatalog(
@@ -47,12 +43,6 @@ data_catalogs_individual_datasets = {
         ),
     },
 }
-# `data_catalogs_stacked_datasets` is a dictionary that contains information about
-# stacked
-# datasets. In this specific code snippet, it is used to store a single DataCatalog
-# object
-# for the stacked dataset of "ambiguous_beliefs". This DataCatalog object is named
-# "ambiguous_beliefs_stacked".
 data_catalogs_stacked_datasets = {
     "ambiguous_beliefs": DataCatalog(name="ambiguous_beliefs_stacked"),
 }
@@ -72,12 +62,7 @@ for new_dataset, catalogs in data_catalogs_individual_datasets.items():
             raw = load_data(path)
             cleaned = function(raw, path)
             return cleaned
-            # save doesn't store the pickle file??? what is this
-            # it's just unnecessary complications (product files inside .pytask????)
-            # EVERYONE understands paths; no one will have time to understand a class
-            # so unclearly defined
 
-    # data catalogs don't get updated between tasks LOL killer feature
     @task(id=f"stack_{new_dataset}_datasets")
     def task_stack_datasets(
         dfs=[
