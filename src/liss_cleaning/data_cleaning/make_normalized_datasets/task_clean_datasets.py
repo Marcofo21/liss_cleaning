@@ -18,6 +18,28 @@ def _get_cleaning_function_from_dataset_module(dataset_name):
     return module.clean_dataset
 
 
+def build_catalogs(datasets):
+    """Build a dictionary of DataCatalogs from a nested datasets dictionary.
+
+    Parameters:
+    - datasets (dict): A dictionary where each key is a dataset name and each value is
+      another dictionary mapping file identifiers to file paths.
+
+    Returns:
+        - dict: A dictionary where each key is a dataset name and each value is
+            a DataCatalog object.
+    """
+    catalogs = {}
+    for dataset_name, files in datasets.items():
+        # Create a new DataCatalog for the dataset.
+        catalog = DataCatalog(name=dataset_name)
+        # Add each file individually.
+        for file_key, file_path in files.items():
+            catalog.add(file_key, file_path)
+        catalogs[dataset_name] = catalog
+    return catalogs
+
+
 data_catalogs_individual_datasets = {
     "ambiguous_beliefs": {
         "xxx-ambiguous-beliefs/wave-1/L_gaudecker2018_1_6p.dta": DataCatalog(
