@@ -14,7 +14,6 @@ dependencies_time_index = {
 
 def clean_dataset(
     raw,
-    source_file_name,  # noqa: ARG001
 ) -> pd.DataFrame:
     raw = raw.reset_index(drop=False)
     df = pd.DataFrame()

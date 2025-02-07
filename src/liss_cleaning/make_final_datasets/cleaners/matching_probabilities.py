@@ -9,9 +9,8 @@ dependencies_time_index = {
 }
 
 
-def clean_dataset(raw, source_file_name):
+def clean_dataset(raw):
     df = pd.DataFrame()
-    source_file_name = source_file_name.stem
     options_ambiguous = {
         1: "e0",
         2: "e1",

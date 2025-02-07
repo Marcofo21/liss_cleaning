@@ -1,4 +1,4 @@
-"""Task to clean indidual raw files for each survey, and stack them in a  dataset."""
+"""Task to clean indidual raw files for each survey, and stack them in a dataset."""
 
 import importlib
 from pathlib import Path
