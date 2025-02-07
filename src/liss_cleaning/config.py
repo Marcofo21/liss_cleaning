@@ -4,6 +4,7 @@ from pathlib import Path
 
 SRC = Path(__file__).parent.resolve()
 SRC_DATA = SRC / "data"
+SRC_RAW_DATASETS_CLEANING = SRC / "raw_datasets_cleaning"
 BLD = SRC.joinpath("../..", "bld").resolve()
 BLD_CLEANED_DATA = BLD / "individual_wave"
 
