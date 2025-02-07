@@ -35,6 +35,13 @@ RAW_PATHS = {
     "monthly_background_variables": get_dta_files_from_folder(
         SRC_DATA / "001-background-variables"
     ),
+    "health": get_dta_files_from_folder(SRC_DATA / "002-health"),
+    "economic_situation_assets": get_dta_files_from_folder(
+        SRC_DATA / "009-economic-situation-assets"
+    ),
+    "economic_situation_income": get_dta_files_from_folder(
+        SRC_DATA / "010-economic-situation-income"
+    ),
 }
 
 
@@ -46,7 +53,7 @@ for cleaner_module_name, paths_to_raw_files in RAW_PATHS.items():
     func = get_cleaning_function_from_dataset_module(cleaner_module_name)
     for path_to_raw_data in paths_to_raw_files:
 
-        @task(id=f"clean_{path_to_raw_data.stem}")
+        @task(id=f"clean_{cleaner_module_name}_{path_to_raw_data.stem}")
         def task_clean_one_dataset(
             path=path_to_raw_data,
             function=func,

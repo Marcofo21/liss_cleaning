@@ -27,15 +27,13 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
     cleaned = pd.DataFrame(index=raw.index)
     column_time_identifier = str(source_file_name).split("/")[-1].split("_")[0][2:5]
     cleaned["personal_id"] = _apply_lowest_int_dtype(raw["nomem_encr"])
-    cleaned[dependencies_time_index["index_name"]] = dependencies_time_index[
-        source_file_name
-    ]
+    cleaned["year"] = int(f"20{column_time_identifier[0:2]}")
 
     col_name = _handle_inconsistent_column_code_in_raw(
         str(4).zfill(3),
         str(1).zfill(3),
         2010,
-        dependencies_time_index[source_file_name],
+        cleaned["year"].unique(),
     )
     cleaned["has_banking_assets"] = raw[f"ca{column_time_identifier}{col_name}"]
     cleaned["has_risky_assets"] = _replace_rename_categorical_column(
