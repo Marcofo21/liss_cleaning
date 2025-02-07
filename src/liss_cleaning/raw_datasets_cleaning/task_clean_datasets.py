@@ -1,6 +1,7 @@
 """Task to make individual cleaned datasets."""
 
 import importlib
+from pathlib import Path
 from typing import Annotated
 
 import pandas as pd
@@ -22,17 +23,20 @@ def get_cleaning_function_from_dataset_module(dataset_name):
     return module.clean_dataset
 
 
+def get_dta_files_from_folder(folder_path: Path) -> list[Path]:
+    """Get all the .dta files from a folder and its subfolders,
+    ignoring files whose stem ends with '_do_not_use'.
+    """
+    return [p for p in folder_path.rglob("*.dta") if not p.stem.endswith("_do_not_use")]
+
+
 RAW_PATHS = {
-    "ambiguous_beliefs": [
-        SRC_DATA / "xxx-ambiguous-beliefs/wave-1/L_gaudecker2018_1_6p.dta",
-        SRC_DATA / "xxx-ambiguous-beliefs/wave-2/L_gaudecker2018_2_6p.dta",
-        SRC_DATA / "xxx-ambiguous-beliefs/wave-3/L_gaudecker2019_3_6p.dta",
-        SRC_DATA / "xxx-ambiguous-beliefs/wave-4/L_gaudecker2019_4_6p.dta",
-        SRC_DATA / "xxx-ambiguous-beliefs/wave-5/L_gaudecker2020_5_6p.dta",
-        SRC_DATA / "xxx-ambiguous-beliefs/wave-6/L_gaudecker2020_6_6p.dta",
-        SRC_DATA / "xxx-ambiguous-beliefs/wave-7/L_gaudecker2021_7_6p.dta",
-    ],
+    "ambiguous_beliefs": get_dta_files_from_folder(SRC_DATA / "xxx-ambiguous-beliefs"),
+    "monthly_background_variables": get_dta_files_from_folder(
+        SRC_DATA / "001-background-variables"
+    ),
 }
+
 
 CATALOG_CLEANED_INDIVIDUAL_DATASETS = DataCatalog(name="individual_cleaned_datasets")
 
