@@ -12,7 +12,7 @@ from liss_cleaning.helper_modules.load_save import load_data
 
 
 def get_cleaning_function_from_dataset_module(dataset_name):
-    """Import the cleaning function from the dataset module."""
+    """Import the cleaning function from the corresponding dataset module."""
     import_string = (
         str(SRC_RAW_DATASETS_CLEANING).split("src/")[1].replace("/", ".")
         + ".cleaners."
@@ -64,6 +64,7 @@ for cleaner_module_name, paths_to_raw_files in RAW_PATHS.items():
             pd.DataFrame,
             CATALOG_CLEANED_INDIVIDUAL_DATASETS[f"{path_to_raw_data.stem}_cleaned"],
         ]:
+            """Clean raw data from one wave of a survey."""
             raw = load_data(path)
             return function(raw, str(path).split("/")[-1])
 
@@ -77,4 +78,5 @@ for cleaner_module_name, paths_to_raw_files in RAW_PATHS.items():
     ) -> Annotated[
         pd.DataFrame, CATALOG_STACKED_DATASETS[f"{cleaner_module_name}_stacked"]
     ]:
+        """Stack all the cleaned waves for each survey."""
         return pd.concat(cleaned_datasets)

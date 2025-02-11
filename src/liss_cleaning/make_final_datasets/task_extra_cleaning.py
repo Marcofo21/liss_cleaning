@@ -26,6 +26,7 @@ def get_cleaning_function_from_dataset_module(dataset_name):
 CATALOGS_EXTRA_DATASETS = {
     "matching_probabilities": ["ambiguous_beliefs_stacked"],
     "yearly_background_variables": ["monthly_background_variables_stacked"],
+    # "some_panel": ["dataset_1", "dataset_2"], # noqa: ERA001
 }
 
 FINAL_DATASETS = DataCatalog(name="final_datasets")
@@ -38,5 +39,5 @@ for final_dataset_name, source_datasets in CATALOGS_EXTRA_DATASETS.items():
         function=func,
         source_datasets=[CATALOG_STACKED_DATASETS[n] for n in source_datasets],
     ) -> Annotated[pd.DataFrame, FINAL_DATASETS[final_dataset_name]]:
-        """Make a new dataset from the source datasets."""
+        """Make a new dataset from the cleaned datasets."""
         return function(*source_datasets)
