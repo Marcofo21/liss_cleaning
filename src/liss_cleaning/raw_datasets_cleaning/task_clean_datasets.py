@@ -49,17 +49,17 @@ CATALOG_CLEANED_INDIVIDUAL_DATASETS = DataCatalog(name="individual_cleaned_datas
 
 CATALOG_STACKED_DATASETS = DataCatalog(name="stacked_datasets")
 
-for cleaner_module_name, paths_to_raw_files in RAW_PATHS.items():
-    func = get_cleaning_function_from_dataset_module(cleaner_module_name)
+for survey_name, paths_to_raw_files in RAW_PATHS.items():
+    func = get_cleaning_function_from_dataset_module(survey_name)
     for path_to_raw_data in paths_to_raw_files:
 
-        @task(id=f"clean_{cleaner_module_name}_{path_to_raw_data.stem}")
+        @task(id=f"clean_{survey_name}_{path_to_raw_data.stem}")
         def task_clean_one_dataset(
             path=path_to_raw_data,
             function=func,
             script_path=SRC_RAW_DATASETS_CLEANING
             / "cleaners"
-            / f"{cleaner_module_name}_cleaner.py",
+            / f"{survey_name}_cleaner.py",
         ) -> Annotated[
             pd.DataFrame,
             CATALOG_CLEANED_INDIVIDUAL_DATASETS[f"{path_to_raw_data.stem}_cleaned"],
@@ -68,15 +68,13 @@ for cleaner_module_name, paths_to_raw_files in RAW_PATHS.items():
             raw = load_data(path)
             return function(raw, str(path).split("/")[-1])
 
-    @task(id=f"stack_{cleaner_module_name}")
+    @task(id=f"stack_{survey_name}")
     def task_stack_datasets(
         cleaned_datasets=[
             CATALOG_CLEANED_INDIVIDUAL_DATASETS[f"{path_to_raw_data.stem}_cleaned"]
             for path_to_raw_data in paths_to_raw_files
         ],
-        dataset_name=cleaner_module_name,
-    ) -> Annotated[
-        pd.DataFrame, CATALOG_STACKED_DATASETS[f"{cleaner_module_name}_stacked"]
-    ]:
+        dataset_name=survey_name,
+    ) -> Annotated[pd.DataFrame, CATALOG_STACKED_DATASETS[f"{survey_name}_stacked"]]:
         """Stack all the cleaned waves for each survey."""
         return pd.concat(cleaned_datasets)

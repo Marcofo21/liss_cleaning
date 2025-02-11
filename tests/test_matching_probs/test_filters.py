@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 # Import the functions under test
-from liss_cleaning.raw_datasets_cleaning.cleaners.matching_probabilities_cleaner import (  # noqa: E501
+from liss_cleaning.make_final_datasets.cleaners.matching_probabilities import (
     _check_answered_all_questions,
 )
 
