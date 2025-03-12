@@ -15,7 +15,9 @@ from liss_cleaning.raw_datasets_cleaning.task_clean_datasets import (
 def get_cleaning_function_from_dataset_module(dataset_name):
     """Import the cleaning function from the dataset module."""
     import_string = (
-        str(SRC_EXTRA_DATASETS_CLEANING).split("src/")[1].replace("/", ".")
+        str(SRC_EXTRA_DATASETS_CLEANING)
+        .split("liss-cleaning/src/")[1]
+        .replace("/", ".")
         + ".cleaners."
         + dataset_name
     )
