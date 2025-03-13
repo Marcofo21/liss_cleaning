@@ -77,4 +77,9 @@ for survey_name, paths_to_raw_files in RAW_PATHS.items():
         dataset_name=survey_name,
     ) -> Annotated[pd.DataFrame, CATALOG_STACKED_DATASETS[f"{survey_name}_stacked"]]:
         """Stack all the cleaned waves for each survey."""
-        return pd.concat(cleaned_datasets)
+        return pd.concat(handle_empty_columns(cleaned_datasets))
+
+
+def handle_empty_columns(cleaned_datasets):
+    """Remove empty columns from the dataset before concatenation."""
+    return [df.dropna(axis=1, how="all") for df in cleaned_datasets]

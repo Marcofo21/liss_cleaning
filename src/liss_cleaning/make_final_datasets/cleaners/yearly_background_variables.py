@@ -4,6 +4,7 @@ from liss_cleaning.config import BLD
 from liss_cleaning.helper_modules.general_cleaners import (
     _apply_lowest_float_dtype,
     _apply_lowest_int_dtype,
+    _handle_missing_column,
 )
 
 dependencies_time_index = {
@@ -43,6 +44,7 @@ def clean_dataset(
     df["dwelling_type"] = _get_first_for_index(
         raw, ["personal_id", "year"], "dwelling_type"
     )
+
     df["dwelling_type"] = df["dwelling_type"].astype("category")
 
     df["education_cbs"] = _get_first_for_index(
@@ -161,6 +163,7 @@ def _get_first_for_index(df, index, column):
     Returns:
             pd.Series: The first values for the column grouped by the index.
     """
+    df[column] = _handle_missing_column(df, column)["series"]
     return df.dropna(subset=[column]).groupby(index)[column].transform("first")
 
 
