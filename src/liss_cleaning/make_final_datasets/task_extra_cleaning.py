@@ -40,6 +40,7 @@ for final_dataset_name, source_datasets in CATALOGS_EXTRA_DATASETS.items():
     def task_make_new_dataset(
         function=func,
         source_datasets=[CATALOG_STACKED_DATASETS[n] for n in source_datasets],
+        script=SRC_EXTRA_DATASETS_CLEANING / "cleaners" / f"{final_dataset_name}.py",
     ) -> Annotated[pd.DataFrame, FINAL_DATASETS[final_dataset_name]]:
         """Make a new dataset from the cleaned datasets."""
         return function(*source_datasets)
