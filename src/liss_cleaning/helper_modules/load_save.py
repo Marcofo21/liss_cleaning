@@ -27,7 +27,10 @@ def load_data(path):
     if extension == "csv":
         return pd.read_csv(path)
     if extension == "dta":
-        return pd.read_stata(path)
+        try:
+            return pd.read_stata(path, convert_categoricals=True)
+        except ValueError:
+            return pd.read_stata(path, convert_categoricals=False)
     if extension == "parquet":
         return pd.read_parquet(path)
     if extension == "arrow":

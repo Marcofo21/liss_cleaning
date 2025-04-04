@@ -1,12 +1,6 @@
 import pandas as pd
 
-from liss_cleaning.config import BLD
-
 pd.set_option("future.no_silent_downcasting", True)
-
-dependencies_time_index = {
-    BLD / "merged_waves" / "ambiguous_beliefs.arrow": "all_waves",
-}
 
 
 def clean_dataset(raw):

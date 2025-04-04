@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-from liss_cleaning.config import SRC_DATA
 from liss_cleaning.helper_modules.general_cleaners import (
     _apply_lowest_int_dtype,
     _handle_inconsistent_column_code_in_raw,
@@ -10,17 +9,6 @@ from liss_cleaning.helper_modules.general_cleaners import (
 )
 
 pd.set_option("future.no_silent_downcasting", True)
-
-dependencies_time_index = {
-    SRC_DATA / "009-economic-situation-assets" / "wave-1" / "ca08a_1.0p_EN.dta": 2008,
-    SRC_DATA / "009-economic-situation-assets" / "wave-2" / "ca10b_EN_1.0p.dta": 2010,
-    SRC_DATA / "009-economic-situation-assets" / "wave-3" / "ca12c_EN_1.0p.dta": 2012,
-    SRC_DATA / "009-economic-situation-assets" / "wave-4" / "ca14d_2.0p_EN.dta": 2014,
-    SRC_DATA / "009-economic-situation-assets" / "wave-5" / "ca16e_EN_1.0p.dta": 2016,
-    SRC_DATA / "009-economic-situation-assets" / "wave-6" / "ca18f_EN_1.0p.dta": 2018,
-    SRC_DATA / "009-economic-situation-assets" / "wave-7" / "ca20g_EN_1.0p.dta": 2020,
-    "index_name": "year",
-}
 
 
 def clean_dataset(raw, source_file_name) -> pd.DataFrame:

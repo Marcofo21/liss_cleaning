@@ -42,6 +42,9 @@ RAW_PATHS = {
     "economic_situation_income": get_dta_files_from_folder(
         SRC_DATA / "010-economic-situation-income"
     ),
+    "corona_questionnaire": get_dta_files_from_folder(
+        SRC_DATA / "xyx-corona-questionnaire"
+    ),
 }
 
 

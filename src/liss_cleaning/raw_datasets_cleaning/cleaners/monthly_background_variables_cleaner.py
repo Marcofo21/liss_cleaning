@@ -1,8 +1,5 @@
-import os
-
 import pandas as pd
 
-from liss_cleaning.config import SRC_DATA
 from liss_cleaning.helper_modules.general_cleaners import (
     _apply_lowest_float_dtype,
     _apply_lowest_int_dtype,
@@ -15,20 +12,6 @@ from liss_cleaning.helper_modules.general_cleaners import (
 def _get_date_month(source_file_name):
     time_identifier = source_file_name.split("/")[-1].split("_")[1]
     return time_identifier[:4] + "-" + time_identifier[4:]
-
-
-dependencies_time_index = {}
-for x in os.listdir(f"{SRC_DATA}/001-background-variables"):
-    if x.endswith(".dta"):
-        dependencies_time_index[SRC_DATA / "001-background-variables" / x] = (
-            _get_date_month(x)
-        )
-dependencies_time_index["index_name"] = "month"
-dependencies_time_index = {
-    k: v
-    for k, v in dependencies_time_index.items()
-    if not str(k).endswith("_do_not_use.dta")
-}
 
 
 def clean_dataset(
