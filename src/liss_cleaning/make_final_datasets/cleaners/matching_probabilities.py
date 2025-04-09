@@ -22,6 +22,7 @@ def clean_dataset(raw):
             lambda x, opt=option: _get_interval(x, opt), axis=1
         )
     df["wave"] = raw["wave"]
+    df["survey_completion"] = raw["end_time"]
     df = df.groupby(["personal_id", "wave"]).filter(_check_answered_all_questions)
     filtered_df = df.groupby("personal_id").filter(_check_eligible)
     return filtered_df
