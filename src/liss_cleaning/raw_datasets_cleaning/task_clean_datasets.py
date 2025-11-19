@@ -9,6 +9,7 @@ from pytask import DataCatalog, task
 
 from liss_cleaning.config import SRC_DATA, SRC_RAW_DATASETS_CLEANING
 from liss_cleaning.helper_modules.load_save import load_data
+from liss_cleaning.helper_modules.general_error_handlers import _check_file_exists
 
 
 def get_cleaning_function_from_dataset_module(dataset_name):
@@ -27,6 +28,7 @@ def get_dta_files_from_folder(folder_path: Path) -> list[Path]:
     """Get all the .dta files from a folder and its subfolders,
     ignoring files whose stem ends with '_do_not_use'.
     """
+    _check_file_exists(folder_path)
     return [p for p in folder_path.rglob("*.dta") if not p.stem.endswith("_do_not_use")]
 
 
