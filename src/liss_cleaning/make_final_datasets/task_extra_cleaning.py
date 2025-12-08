@@ -16,14 +16,13 @@ def get_cleaning_function_from_dataset_module(dataset_name):
     """Import the cleaning function from the dataset module."""
     import_string = (
         str(SRC_EXTRA_DATASETS_CLEANING)
-        .split("liss-cleaning/src/")[1]
-        .replace("/", ".")
+        .split("liss-cleaning" + __import__("os").sep + "src" + __import__("os").sep)[1]
+        .replace(__import__("os").sep, ".")
         + ".cleaners."
         + dataset_name
     )
     module = importlib.import_module(import_string)
     return module.clean_dataset
-
 
 CATALOGS_EXTRA_DATASETS = {
     "matching_probabilities": ["ambiguous_beliefs_stacked"],

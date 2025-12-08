@@ -11,11 +11,10 @@ from liss_cleaning.config import SRC_DATA, SRC_RAW_DATASETS_CLEANING
 from liss_cleaning.helper_modules.load_save import load_data
 from liss_cleaning.helper_modules.general_error_handlers import _check_file_exists
 
-
 def get_cleaning_function_from_dataset_module(dataset_name):
     """Import the cleaning function from the corresponding dataset module."""
     import_string = (
-        str(SRC_RAW_DATASETS_CLEANING).split("liss-cleaning/src/")[1].replace("/", ".")
+        str(SRC_RAW_DATASETS_CLEANING).split("liss-cleaning" + str(Path("/")) + "src" + str(Path("/")))[1].replace(str(Path("/")), ".")
         + ".cleaners."
         + dataset_name
         + "_cleaner"
@@ -71,7 +70,7 @@ for survey_name, paths_to_raw_files in RAW_PATHS.items():
         ]:
             """Clean raw data from one wave of a survey."""
             raw = load_data(path)
-            return function(raw, str(path).split("/")[-1])
+            return function(raw, path.name)
 
     @task(id=f"stack_{survey_name}")
     def task_stack_datasets(
