@@ -134,7 +134,29 @@ def clean_dataset(
     ]:
         df[col] = _get_first_for_index(raw, ["personal_id", "year"], col)
         df[col] = df[col].astype("category")
-    breakpoint()
+    assets_subset = raw_economic_situation_assets.reset_index(drop=False)[
+        ["personal_id", "year", "total_wealth", "has_risky_assets"]
+    ].copy()
+
+    assets_reset = raw_economic_situation_assets.reset_index()
+
+    df = df.merge(
+        assets_reset[
+            [
+                "personal_id",
+                "year",
+                "total_wealth",
+                "has_risky_assets",
+                "share_risky_assets",
+            ]
+        ],
+        on=["personal_id", "year"],
+        how="left",
+    )
+
+    df["total_wealth"] = _apply_lowest_float_dtype(df["total_wealth"])
+    df["has_risky_assets"] = df["has_risky_assets"].astype("category")
+    df["share_risky_assets"] = _apply_lowest_float_dtype(df["share_risky_assets"])
     return df
 
 

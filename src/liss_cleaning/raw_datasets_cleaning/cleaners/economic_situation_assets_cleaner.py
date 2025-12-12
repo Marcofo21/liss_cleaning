@@ -16,8 +16,6 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
     column_time_identifier = str(source_file_name).split("/")[-1].split("_")[0][2:5]
     cleaned["personal_id"] = _apply_lowest_int_dtype(raw["nomem_encr"])
     cleaned["year"] = int(f"20{column_time_identifier[0:2]}")
-
-    # Banking assets - special handling for "has" column
     banking_has_col_name = _handle_inconsistent_column_code_in_raw(
         str(4).zfill(3),
         str(1).zfill(3),
@@ -31,7 +29,6 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         raw, column_time_identifier, "012", "013"
     )
 
-    # Insurance assets (single-premium, life annuity, endowment)
     cleaned["has_insurance_assets"] = raw[f"ca{column_time_identifier}005"]
     cleaned["value_insurance_assets"] = _process_asset_value(
         raw, column_time_identifier, "014", "015"
@@ -40,7 +37,6 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         cleaned["value_insurance_assets"], cleaned["has_insurance_assets"]
     )
 
-    # Risky assets (investments, stocks, bonds, etc.)
     cleaned["has_risky_assets"] = _replace_rename_categorical_column(
         raw[f"ca{column_time_identifier}006"], {"no": "No", "yes": "Yes"}
     )
@@ -51,7 +47,6 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         cleaned["value_risky_assets"], cleaned["has_risky_assets"]
     )
 
-    # Real estate (not personal home)
     cleaned["has_real_estate"] = raw[f"ca{column_time_identifier}007"]
     cleaned["value_real_estate"] = _process_asset_value(
         raw, column_time_identifier, "018", "019"
@@ -60,7 +55,6 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         cleaned["value_real_estate"], cleaned["has_real_estate"]
     )
 
-    # Real estate mortgage debt (LIABILITY - subtract from wealth)
     cleaned["has_real_estate_mortgage"] = raw[f"ca{column_time_identifier}020"]
     cleaned["value_real_estate_mortgage"] = _process_asset_value(
         raw, column_time_identifier, "021", "022"
@@ -69,7 +63,6 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         cleaned["value_real_estate_mortgage"], cleaned["has_real_estate_mortgage"]
     )
 
-    # Vehicles (cars, motorcycles, boats, caravans)
     cleaned["has_vehicles"] = raw[f"ca{column_time_identifier}008"]
     cleaned["value_vehicles"] = _process_asset_value(
         raw, column_time_identifier, "023", "024"
@@ -78,7 +71,6 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         cleaned["value_vehicles"], cleaned["has_vehicles"]
     )
 
-    # Loans to family/friends/acquaintances
     cleaned["has_loans_to_others"] = raw[f"ca{column_time_identifier}010"]
     cleaned["value_loans_to_others"] = _process_asset_value(
         raw, column_time_identifier, "025", "026"
@@ -87,7 +79,6 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         cleaned["value_loans_to_others"], cleaned["has_loans_to_others"]
     )
 
-    # Other assets (antiques, jewelry, collections, cash)
     cleaned["has_other_assets"] = raw[f"ca{column_time_identifier}011"]
     cleaned["value_other_assets"] = _process_asset_value(
         raw, column_time_identifier, "027", "028"
@@ -96,8 +87,10 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         cleaned["value_other_assets"], cleaned["has_other_assets"]
     )
 
-    # Private company equity (for DGA - majority-shareholder directors)
-    cleaned["is_dga"] = raw[f"ca{column_time_identifier}079"]
+    if column_time_identifier in ["08a"]:
+        cleaned["is_dga"] = pd.Series(np.nan, index=raw.index)
+    else:
+        cleaned["is_dga"] = raw[f"ca{column_time_identifier}079"]
     cleaned["has_private_pension_company"] = raw.get(
         f"ca{column_time_identifier}030", np.nan
     )
@@ -111,54 +104,144 @@ def clean_dataset(raw, source_file_name) -> pd.DataFrame:
         cleaned["value_private_company_equity"], cleaned["is_dga"]
     )
 
-    # Partnership equity
-    cleaned["has_partnership"] = raw[f"ca{column_time_identifier}080"]
+    cleaned["has_partnership"] = raw.get(f"ca{column_time_identifier}080", np.nan)
     cleaned["partnership_fiscal_year_matches_calendar"] = raw.get(
         f"ca{column_time_identifier}041", np.nan
     )
-    cleaned["value_partnership_equity"] = _process_asset_value(
-        raw, column_time_identifier, "083", "084"
-    )
+    if column_time_identifier in ["10b", "08a"]:
+        cleaned["value_partnership_equity"] = pd.Series(np.nan, index=raw.index)
+    else:
+        cleaned["value_partnership_equity"] = _process_asset_value(
+            raw, column_time_identifier, "083", "084"
+        )
     cleaned["value_partnership_equity"] = _add_zeros_for_nas_in_indicator_column(
         cleaned["value_partnership_equity"], cleaned["has_partnership"]
     )
 
-    # Calculate total wealth
-    cleaned["total_wealth"] = _calculate_total_wealth(cleaned)
-
+    cleaned["total_wealth"] = _calculate_total_wealth(cleaned, source_file_name)
+    cleaned["share_risky_assets"] = np.where(
+        cleaned["total_wealth"] == 0,
+        0,
+        cleaned["value_risky_assets"] / cleaned["total_wealth"].replace(0, np.nan),
+    )
     return cleaned
 
 
-def _calculate_total_wealth(cleaned: pd.DataFrame) -> pd.Series:
+def _check_column_sanity(
+    cleaned: pd.DataFrame,
+    column_name: str,
+    source_file_name: str,
+    allow_negative: bool = False,
+) -> None:
+    """
+    Check that a column contains only valid numeric values.
+
+    Args:
+        cleaned: DataFrame containing the column
+        column_name: Name of the column to check
+        source_file_name: Name of the source file (for error messages)
+        allow_negative: Whether negative values are allowed
+
+    Raises:
+        TypeError: If column contains non-numeric values
+        ValueError: If column contains negative values when not allowed
+    """
+    if column_name not in cleaned.columns:
+        raise KeyError(
+            f"Column '{column_name}' not found in dataset '{source_file_name}'"
+        )
+
+    col = cleaned[column_name]
+
+    if col.dtype == "object":
+        string_mask = col.apply(lambda x: isinstance(x, str))
+        if string_mask.any():
+            string_values = col.loc[string_mask].unique()
+            raise TypeError(
+                f"Column '{column_name}' in dataset '{source_file_name}' contains string values. "
+                f"Sample values: {list(string_values[:5])}"
+            )
+
+    test_numeric = pd.to_numeric(col, errors="coerce")
+    non_null_before = col.notna().sum()
+    non_null_after = test_numeric.notna().sum()
+
+    if non_null_after < non_null_before:
+        problem_values = col.loc[col.notna() & test_numeric.isna()].unique()
+        raise TypeError(
+            f"Column '{column_name}' in dataset '{source_file_name}' contains "
+            f"non-numeric values. Sample problematic values: {list(problem_values[:5])}"
+        )
+
+    if not allow_negative:
+        if (test_numeric < 0).any():
+            negative_count = (test_numeric < 0).sum()
+            negative_sample = test_numeric[test_numeric < 0].head(5).tolist()
+            raise ValueError(
+                f"Column '{column_name}' in dataset '{source_file_name}' contains "
+                f"{negative_count} negative values (not allowed). "
+                f"Sample negative values: {negative_sample}"
+            )
+
+
+def _calculate_total_wealth(cleaned: pd.DataFrame, source_file_name: str) -> pd.Series:
     """Calculate total wealth by summing assets and subtracting liabilities."""
-    asset_columns = [
-        "value_banking_assets",
-        "value_insurance_assets",
-        "value_risky_assets",
-        "value_real_estate",
-        "value_vehicles",
-        "value_loans_to_others",
-        "value_other_assets",
-        "value_private_company_equity",
-        "value_partnership_equity",
-    ]
+
+    assets_allowing_negative = {
+        "value_banking_assets": True,
+        "value_insurance_assets": False,
+        "value_risky_assets": True,
+        "value_real_estate": False,
+        "value_vehicles": False,
+        "value_loans_to_others": False,
+        "value_other_assets": False,
+        "value_private_company_equity": True,
+        "value_partnership_equity": True,
+    }
 
     liability_columns = [
         "value_real_estate_mortgage",
     ]
 
+    for col, allow_negative in assets_allowing_negative.items():
+        _check_column_sanity(
+            cleaned, col, source_file_name, allow_negative=allow_negative
+        )
+
+    for col in liability_columns:
+        _check_column_sanity(cleaned, col, source_file_name, allow_negative=False)
+
+    asset_columns = list(assets_allowing_negative.keys())
     total_assets = cleaned[asset_columns].sum(axis=1)
     total_liabilities = cleaned[liability_columns].sum(axis=1)
+
     return total_assets - total_liabilities
 
 
 def _process_asset_value(raw, column_time_identifier, value_code, categorical_code):
     """Process asset value column with missing value replacement and categorical imputation."""
+    value_col = raw[f"ca{column_time_identifier}{value_code}"].copy()
+
+    if value_col.dtype.name == "category":
+        value_col = value_col.astype(str)
+
+    if value_col.dtype == "object":
+        value_col = value_col.replace(
+            {
+                "I don't know": np.nan,
+                "I prefer not to say": np.nan,
+                "nan": np.nan,
+            }
+        )
+        value_col = pd.to_numeric(value_col, errors="coerce")
+
     value_col = _replace_missing_floats(
-        raw[f"ca{column_time_identifier}{value_code}"],
+        value_col,
         float_nan_values=[
             np.nan,
             9999999999.0,
+            99999999998.0,
+            99999999999.0,
             9999999998.0,
             -9999999999.0,
             -9999999998.0,
@@ -166,6 +249,7 @@ def _process_asset_value(raw, column_time_identifier, value_code, categorical_co
             -9,
         ],
     )
+
     return _add_imputed_values_from_categorical_column(
         value_col,
         raw[f"ca{column_time_identifier}{categorical_code}"],
@@ -177,8 +261,9 @@ def _add_zeros_for_nas_in_indicator_column(
 ) -> pd.Series:
     """Impute zeros in main_asset_column where indicator_column is 'No' or 2."""
     result = main_asset_column.copy()
-    mask = (indicator_column.isin(["No", 2, "2"])) & (result.isna())
-    result.loc[mask] = 0.0
+    indicator_str = indicator_column.astype(str)
+    mask = (indicator_str.isin(["No", "2", "2.0"])) & (result.isna())
+    result[mask] = 0.0
     return result
 
 
@@ -188,6 +273,10 @@ def _add_imputed_values_from_categorical_column(
     """Impute missing values in main_asset_column from impute_from_column."""
     try:
         impute_from_column_str = impute_from_column.astype(str)
+        impute_from_column_str = impute_from_column_str.str.replace(
+            "\x80", "€", regex=False
+        )
+
         assets_from_categoricals = impute_from_column_str.replace(
             {
                 "less than  50": 25.0,
@@ -236,6 +325,7 @@ def _add_imputed_values_from_categorical_column(
                 "€ 100,000 or more": 100000.0,
                 "less than € 50,000": 25000.0,
                 "€ 50,000 to € 100,000": 75000.0,
+                "€  50,000 to € 100,000": 75000.0,
                 "€ 100,000 to € 150,000": 125000.0,
                 "€ 150,000 to € 200,000": 175000.0,
                 "€ 200,000 to € 250,000": 225000.0,
@@ -248,15 +338,35 @@ def _add_imputed_values_from_categorical_column(
                 "negative": np.nan,
                 "-9.0": np.nan,
                 "-9": np.nan,
+                "-150000.0": np.nan,
+                "-200.0": np.nan,
+                "-10000.0": np.nan,
+                "-70000.0": np.nan,
+                "-1180.0": np.nan,
                 -9.0: np.nan,
                 -9: np.nan,
+                -150000.0: np.nan,
+                -200.0: np.nan,
+                -10000.0: np.nan,
+                -70000.0: np.nan,
+                -1180.0: np.nan,
                 "999": np.nan,
                 "999.0": np.nan,
                 999: np.nan,
+                999.0: np.nan,
                 "I don't know": np.nan,
+                "I prefer not to say": np.nan,
+                "nan": np.nan,
+                "-5000000.0": np.nan,
+                "-500000.0": np.nan,
+                "-45000.0": np.nan,
+                "-88000.0": np.nan,
             }
         )
-        assets_from_categoricals = assets_from_categoricals.astype(float)
+        assets_from_categoricals = pd.to_numeric(
+            assets_from_categoricals, errors="coerce"
+        )
+
         if (assets_from_categoricals < 0).any():
             raise ValueError(
                 "Negative values found in imputed assets from categoricals."
