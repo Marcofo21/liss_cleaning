@@ -14,9 +14,9 @@ dependencies_time_index = {
 
 
 def clean_dataset(
-    raw,
+    raw_monthly_background_variables, raw_economic_situation_assets
 ) -> pd.DataFrame:
-    raw = raw.reset_index(drop=False)
+    raw = raw_monthly_background_variables.reset_index(drop=False)
     df = pd.DataFrame()
 
     df["personal_id"] = _apply_lowest_int_dtype(raw["personal_id"])
@@ -134,7 +134,7 @@ def clean_dataset(
     ]:
         df[col] = _get_first_for_index(raw, ["personal_id", "year"], col)
         df[col] = df[col].astype("category")
-
+    breakpoint()
     return df
 
 

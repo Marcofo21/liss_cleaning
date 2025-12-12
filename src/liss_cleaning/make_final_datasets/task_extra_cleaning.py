@@ -24,9 +24,13 @@ def get_cleaning_function_from_dataset_module(dataset_name):
     module = importlib.import_module(import_string)
     return module.clean_dataset
 
+
 CATALOGS_EXTRA_DATASETS = {
     "matching_probabilities": ["ambiguous_beliefs_stacked"],
-    "yearly_background_variables": ["monthly_background_variables_stacked"],
+    "yearly_background_variables": [
+        "monthly_background_variables_stacked",
+        "economic_situation_assets_stacked",
+    ],
     # "some_panel": ["dataset_1", "dataset_2"], # noqa: ERA001
 }
 
