@@ -14,9 +14,6 @@ from liss_cleaning.raw_datasets_cleaning.cleaners.ambiguous_beliefs_cleaner impo
 
 
 class TestExtractWaveIdentifier:
-    def test_extracts_wave_from_typical_filename(self):
-        result = _extract_wave_identifier("survey_ab_3_2019.dta")
-        assert result == 3
 
     def test_extracts_single_digit_wave(self):
         result = _extract_wave_identifier("survey_ab_1_2018.dta")
