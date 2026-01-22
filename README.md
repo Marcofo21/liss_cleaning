@@ -21,8 +21,6 @@ Requires [pixi](https://pixi.sh/):
 pixi install
 ```
 
-Or with conda/mamba using `environment.yml`.
-
 ## Usage
 
 Run the full pipeline:
