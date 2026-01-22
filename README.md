@@ -1,40 +1,77 @@
-# Templates for Reproducible Research Projects in Economics
+# liss_cleaning
 
-![MIT license](https://img.shields.io/github/license/OpenSourceEconomics/econ-project-templates)
-[![image](https://zenodo.org/badge/14557543.svg)](https://zenodo.org/badge/latestdoi/14557543)
-[![Documentation Status](https://readthedocs.org/projects/econ-project-templates/badge/?version=stable)](https://econ-project-templates.readthedocs.io/en/stable/)
-[![image](https://github.com/OpenSourceEconomics/econ-project-templates/actions/workflows/main.yml/badge.svg)](https://github.com/OpenSourceEconomics/econ-project-templates/actions/workflows/main.yml)
-[![image](https://codecov.io/gh/OpenSourceEconomics/econ-project-templates/branch/main/graph/badge.svg)](https://codecov.io/gh/OpenSourceEconomics/econ-project-templates)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/OpenSourceEconomics/econ-project-templates/main.svg)](https://results.pre-commit.ci/latest/github/OpenSourceEconomics/econ-project-templates/main)
+A reproducible pipeline for cleaning and harmonizing LISS panel survey data, built with
+[pytask](https://pytask-dev.readthedocs.io/).
 
-This project provides a template for economists aimed at facilitating the production of
-reproducible research using the most commonly used programming languages in the field,
-such as Python, R, Julia, and Stata.
+## Overview
 
-> [!NOTE]
-> Although the underlying architecture supports all listed programming languages, the
-> current template implementation is limited to Python and R.
+This project processes raw LISS (Longitudinal Internet Studies for the Social Sciences)
+survey waves into analysis-ready datasets. The pipeline:
 
-## Getting Started
+1. Cleans individual survey waves with dataset-specific cleaners
+2. Stacks waves into longitudinal datasets
+3. Constructs derived datasets (e.g., matching probabilities, yearly background
+   variables)
 
-You can find all necessary resources to get started on our
-[documentation](https://econ-project-templates.readthedocs.io/en/stable/).
+## Installation
 
-## Contributing
+Requires [pixi](https://pixi.sh/):
 
-We welcome suggestions on anything from improving the documentation to reporting bugs
-and requesting new features. Please open an
-[issue](https://github.com/OpenSourceEconomics/econ-project-templates/issues) in these
-cases.
+```bash
+pixi install
+```
 
-If you want to work on a specific feature, we are more than happy to get you started!
-Please [get in touch briefly](https://www.wiwi.uni-bonn.de/gaudecker), this is a small
-team so there is no need for a detailed formal process.
+Or with conda/mamba using `environment.yml`.
 
-### Contributors
+## Usage
 
-@hmgaudecker @timmens @tobiasraabe @mj023
+Run the full pipeline:
 
-### Former Contributors
+```bash
+pixi run pytask
+```
 
-@janosg @PKEuS @philippmuller @julienschat @raholler
+Run tests:
+
+```bash
+pixi run pytest
+```
+
+## Project Structure
+
+```
+src/liss_cleaning/
+├── config.py                      # Path constants
+├── data/                          # Raw LISS .dta files (not tracked)
+├── helper_modules/
+│   ├── general_cleaners.py        # Reusable cleaning functions
+│   ├── general_error_handlers.py  # Validation helpers
+│   └── load_save.py               # I/O utilities
+├── raw_datasets_cleaning/
+│   ├── task_clean_datasets.py     # Pytask tasks for wave-level cleaning
+│   └── cleaners/                  # One module per survey
+│       ├── ambiguous_beliefs_cleaner.py
+│       ├── monthly_background_variables_cleaner.py
+│       └── ...
+└── make_final_datasets/
+    ├── task_extra_cleaning.py     # Pytask tasks for derived datasets
+    └── cleaners/
+        ├── matching_probabilities.py
+        └── yearly_background_variables.py
+
+bld/                               # Build outputs (gitignored)
+tests/                             # Pytest test suite
+```
+
+## Adding a New Survey
+
+1. Place raw `.dta` files in `src/liss_cleaning/data/<survey-folder>/`
+2. Create `src/liss_cleaning/raw_datasets_cleaning/cleaners/<survey_name>_cleaner.py`
+3. Implement `clean_dataset(raw, source_file_name) -> pd.DataFrame`
+4. Register the survey in `RAW_PATHS` dict in `task_clean_datasets.py`
+
+See `template_cleaner.py` for a minimal example.
+
+## License
+
+MIT
