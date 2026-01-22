@@ -1,4 +1,4 @@
-# liss_cleaning
+# LISS data cleaning
 
 A reproducible pipeline for cleaning and harmonizing LISS panel survey data, built with
 [pytask](https://pytask-dev.readthedocs.io/).
